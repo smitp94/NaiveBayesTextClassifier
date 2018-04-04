@@ -2,12 +2,31 @@ import sys
 # file_read = "sys.argv[1]"
 file_read = "data/train-labeled.txt"
 
+records=[]
+class Record:
+    def __init__(self, id, t_f, pos_neg, text):
+        self.id = id
+        self.t_f = t_f
+        self.pos_neg = pos_neg
+        self.text = text
+
 
 def read_file():
+    global records
     with open(file_read, encoding='utf8') as f:
         content = f.readlines()
     content = [x.strip() for x in content]
-    print(content)
+    for line in content:
+        contents = line.split()
+        id = contents[0]
+        t_f = contents[1]
+        pos_neg = contents[2]
+        text = contents[3::]
+        r = Record(id,t_f,pos_neg,text)
+        records.append(r)
+    print(records[3].text) #exclamation...punctions????
+
+
 
 
 def remove_stopwords():
