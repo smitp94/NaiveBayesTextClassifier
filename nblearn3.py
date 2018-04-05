@@ -71,7 +71,7 @@ def count_words():
     Prior_Totals["Neg"] = 0
 
     for r in records:
-        total_records += 1
+        total_records += 1  # print(len(records))
         # Counting Priors
         if r.t_f == "True":
             Prior_Totals["True"] += 1
@@ -110,13 +110,14 @@ def count_words():
     for k in Prior_Totals.keys():
         Prior_Totals[k] /= total_records
     # print(len(unique_words))
+    len_unique = len(unique_words)
     for k in words.keys():
-        words[k]["True"] = (words[k]["True"] + 1)/(Totals["True"] + len(unique_words))
-        words[k]["Fake"] = (words[k]["Fake"] + 1)/(Totals["Fake"] + len(unique_words))
-        words[k]["Pos"] = (words[k]["Pos"] + 1)/(Totals["Pos"] + len(unique_words))
-        words[k]["Neg"] = (words[k]["Neg"] + 1)/(Totals["Neg"] + len(unique_words))
+        words[k]["True"] = (words[k]["True"] + 1)/(Totals["True"] + len_unique)
+        words[k]["Fake"] = (words[k]["Fake"] + 1)/(Totals["Fake"] + len_unique)
+        words[k]["Pos"] = (words[k]["Pos"] + 1)/(Totals["Pos"] + len_unique)
+        words[k]["Neg"] = (words[k]["Neg"] + 1)/(Totals["Neg"] + len_unique)
     # print(words)
-    nbmodel_write(words, len(unique_words))
+    nbmodel_write(words, len_unique)
 
 
 def nbmodel_write(words, len_unique):
