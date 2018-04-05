@@ -53,13 +53,19 @@ def classify():
             answer[id]["true_fake"] = ""
 
         text = contents[1]
-        for w in text:
+        for w1 in text:
+            w = w1.lower()
             if w in words.keys():
                 prob_true += math.log(words[w]["True"])
                 prob_fake += math.log(words[w]["Fake"])
                 prob_pos += math.log(words[w]["Pos"])
                 prob_neg += math.log(words[w]["Neg"])
-            print(id+" "+str(prob_pos)+" "+str(prob_neg)+" "+str(prob_true)+" "+str(prob_true))
+            else:
+                prob_true += math.log(1/(Totals["True"] + len_unique))
+                prob_fake += math.log(1/(Totals["Fake"] + len_unique))
+                prob_pos += math.log(1/(Totals["Pos"] + len_unique))
+                prob_neg += math.log(1/(Totals["Neg"] + len_unique))
+            # print(id+" "+str(prob_pos)+" "+str(prob_neg)+" "+str(prob_true)+" "+str(prob_true))
         if prob_true > prob_fake:
             answer[id]["true_fake"] = "True"
         else:
