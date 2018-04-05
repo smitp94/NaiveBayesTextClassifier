@@ -1,9 +1,10 @@
 import json
+import sys
 
 # file_read = "sys.argv[1]"
-file_read = "data/train-labeled.txt"
+# file_read = "data/train-labeled.txt"
 # file_read = "data/test.txt"
-
+file_write = 'data/nbmodel.txt'
 records = []
 unique_words = []
 Totals = {}
@@ -20,7 +21,7 @@ class Record:
 
 def read_file():
     global records
-    with open(file_read, encoding='utf8') as f:
+    with open(sys.argv[1], encoding='utf8') as f:
         content = f.readlines()
     content = [x.strip() for x in content]
     for line in content:
@@ -109,15 +110,9 @@ def count_words():
 def nbmodel_write(words, len_unique):
     global Prior_Totals
     global Totals
-    f = open('data/nbmodel.txt', 'w', encoding='utf8')
+    f = open(file_write, 'w', encoding='utf8')
     c = json.loads("[{0},{1},{2},{3}]".format(json.dumps(Prior_Totals), json.dumps(Totals), json.dumps(words), json.dumps(len_unique)))
     f.write(json.dumps(c))
-#
-
-
-#     TagTotals = AllDict[1]
-#     Prob_TT = AllDict[2]
-#     Prob_WT = AllDict[3]
 
 
 read_file()

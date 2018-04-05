@@ -1,7 +1,9 @@
 import json
+import sys
+import math
 
-file_read = "sys.argv[1]"
-file_read = "data/dev-text.txt"
+file_read = "data/nbmodel.txt"
+file_write = "data/nboutput.txt"
 
 Totals = {}
 Prior_Totals = {}
@@ -15,7 +17,7 @@ def read_param():
     global words
     global len_unique
 
-    fh = open("data/nbmodel.txt", encoding='utf8')
+    fh = open(file_read, encoding='utf8')
 
     all_dict = json.load(fh)
     Prior_Totals = all_dict[0]
@@ -31,19 +33,19 @@ def classify():
     global len_unique
     answer = {}
 
-    prob_pos = Prior_Totals["Pos"]
-    prob_neg = Prior_Totals["Neg"]
-    prob_true = Prior_Totals["True"]
-    prob_fake = Prior_Totals["Fake"]
-
-    with open(file_read, encoding='utf8') as f:
+    with open("data/dev-text.txt", encoding='utf8') as f:
+    # with open(sys.argv[1], encoding='utf8') as f:
         content = f.readlines()
     content = [x.strip() for x in content]
 
-
     for line in content:
         contents = line.split()
+        # Initializing
         id = contents[0]
+        prob_pos = math.log(Prior_Totals["Pos"])
+        prob_neg = math.log(Prior_Totals["Neg"])
+        prob_true = math.log(Prior_Totals["True"])
+        prob_fake = math.log(Prior_Totals["Fake"])
 
         if id not in answer:
             answer[id] = {}
@@ -53,10 +55,11 @@ def classify():
         text = contents[1]
         for w in text:
             if w in words.keys():
-                prob_true *= words[w]["True"]
-                prob_fake *= words[w]["Fake"]
-                prob_pos *= words[w]["Pos"]
-                prob_neg *= words[w]["Neg"]
+                prob_true += math.log(words[w]["True"])
+                prob_fake += math.log(words[w]["Fake"])
+                prob_pos += math.log(words[w]["Pos"])
+                prob_neg += math.log(words[w]["Neg"])
+            print(id+" "+str(prob_pos)+" "+str(prob_neg)+" "+str(prob_true)+" "+str(prob_true))
         if prob_true > prob_fake:
             answer[id]["true_fake"] = "True"
         else:
@@ -69,11 +72,16 @@ def classify():
 
 
 def write_file(answer):
-    fh = open('data/nboutput.txt', 'w', encoding='utf8')
+    fh = open(file_write, 'w', encoding='utf8')
+    flag = 0
     for k in answer.keys():
-        fh.write(k)
+        if flag == 0:
+            flag = 1
+            fh.write(k)
+        else:
+            fh.write("\n"+k)
         fh.write(" "+answer[k]["true_fake"])
-        fh.write(" " + answer[k]["pos_neg"]+"\n")
+        fh.write(" " + answer[k]["pos_neg"])
     fh.close()
 
 
