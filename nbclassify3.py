@@ -66,7 +66,7 @@ def classify():
                 prob_fake += math.log(1/(Totals["Fake"] + len_unique))
                 prob_pos += math.log(1/(Totals["Pos"] + len_unique))
                 prob_neg += math.log(1/(Totals["Neg"] + len_unique))
-            # print(id+" "+str(prob_pos)+" "+str(prob_neg)+" "+str(prob_true)+" "+str(prob_true))
+            # print(id+" "+str(prob_pos)+" "+str(prob_neg)+" "+str(prob_true)+" "+str(prob_fake))
         if prob_true > prob_fake:
             answer[id]["true_fake"] = "True"
         else:
