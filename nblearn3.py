@@ -1,7 +1,8 @@
+import json
 
 # file_read = "sys.argv[1]"
-# file_read = "data/train-labeled.txt"
-file_read = "data/test.txt"
+file_read = "data/train-labeled.txt"
+# file_read = "data/test.txt"
 
 records = []
 unique_words = []
@@ -46,6 +47,7 @@ def count_words():
     global records
     global unique_words
     global Prior_Totals
+    total_records = 0
     words = {}
     Totals["True"] = 0
     Totals["Fake"] = 0
@@ -58,6 +60,7 @@ def count_words():
     Prior_Totals["Neg"] = 0
 
     for r in records:
+        total_records += 1
         # Counting Priors
         if r.t_f == "True":
             Prior_Totals["True"] += 1
@@ -78,6 +81,7 @@ def count_words():
                 words[t]["Pos"] = 0
                 words[t]["Neg"] = 0
 
+            # if not is_stopword(t):
             if r.t_f == "True":
                 words[t]["True"] += 1
                 Totals["True"] += 1
@@ -91,7 +95,29 @@ def count_words():
             else:
                 words[t]["Neg"] += 1
                 Totals["Neg"] += 1
-    print(Prior_Totals)
+    for k in Prior_Totals.keys():
+        Prior_Totals[k] /= total_records
+    for k in words.keys():
+        words[k]["True"] = (words[k]["True"] + 1)/(Totals["True"] + len(unique_words))
+        words[k]["Fake"] = (words[k]["Fake"] + 1)/(Totals["Fake"] + len(unique_words))
+        words[k]["Pos"] = (words[k]["Pos"] + 1)/(Totals["Pos"] + len(unique_words))
+        words[k]["Neg"] = (words[k]["Neg"] + 1)/(Totals["Neg"] + len(unique_words))
+    # print(words)
+    nbmodel_write(words, len(unique_words))
+
+
+def nbmodel_write(words, len_unique):
+    global Prior_Totals
+    global Totals
+    f = open('data/nbmodel.txt', 'w', encoding='utf8')
+    c = json.loads("[{0},{1},{2},{3}]".format(json.dumps(Prior_Totals), json.dumps(Totals), json.dumps(words), json.dumps(len_unique)))
+    f.write(json.dumps(c))
+#
+
+
+#     TagTotals = AllDict[1]
+#     Prob_TT = AllDict[2]
+#     Prob_WT = AllDict[3]
 
 
 read_file()
