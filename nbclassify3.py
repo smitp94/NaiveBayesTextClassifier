@@ -52,7 +52,8 @@ def classify():
             answer[id]["pos_neg"] = ""
             answer[id]["true_fake"] = ""
 
-        text = contents[1]
+        text = contents[1::]
+        # print(text)
         for w1 in text:
             w = w1.lower()
             if w in words.keys():
