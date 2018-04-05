@@ -52,7 +52,7 @@ def classify():
             answer[id]["pos_neg"] = ""
             answer[id]["true_fake"] = ""
 
-        text = contents[1::]
+        text = contents[1:]
         # print(text)
         for w1 in text:
             w = w1.lower()
@@ -87,7 +87,7 @@ def write_file(answer):
             fh.write(k)
         else:
             fh.write("\n"+k)
-        fh.write(" "+answer[k]["true_fake"])
+        fh.write(" " + answer[k]["true_fake"])
         fh.write(" " + answer[k]["pos_neg"])
     fh.close()
 
