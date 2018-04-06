@@ -1,7 +1,7 @@
 import json
 import sys
-import string
 import re
+import string
 
 file_write = 'data/nbmodel.txt'
 
@@ -19,26 +19,32 @@ class Record:
         self.text = text
 
 
+def remove_punctuation_lower(contents):
+    translator = str.maketrans('', '', string.punctuation)
+
+    text = ' '.join(contents)
+    # text = text.translate(translator)
+    regex = re.compile('[%s]' % re.escape("?,!.;:\"-'"))
+    text = regex.sub(' ', text)
+    text = text.lower()
+    return text.split()
+
+
 def read_file():
     global records
-
-    # To remove punctuation
-    # translator = str.maketrans('', '', string.punctuation)
-
     with open("data/train-labeled.txt", encoding='utf8') as f:
     # with open(sys.argv[1], encoding='utf8') as f:
         content = f.readlines()
     content = [x.strip() for x in content]
     for line in content:
-        # line = line.translate(translator)
-        regex = re.compile('[%s]' % re.escape(string.punctuation))
-        line = regex.sub(' ', line)
-        # print(line)
         contents = line.split()
         id = contents[0]
         t_f = contents[1]
         pos_neg = contents[2]
-        text = contents[3::]
+
+        # For Punctuation Removal
+        text = remove_punctuation_lower(contents[3::])
+
         r = Record(id, t_f, pos_neg, text)
         records.append(r)
     # print(records[959].text)
@@ -46,13 +52,7 @@ def read_file():
 
 def is_stopword(word):
     stopwords = ["a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "could", "did", "do", "does", "doing", "down", "during", "each", "few", "for", "from", "further", "had", "has", "have", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "I", "I'd", "I'll", "I'm", "I've", "if", "in", "into", "is", "it", "it's", "its", "itself", "let's", "me", "more", "most", "my", "myself", "nor", "of", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "she", "she'd", "she'll", "she's", "should", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "we", "we'd", "we'll", "we're", "we've", "were", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "would", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"]
-    stop_wo_punc = []
-    # translator = str.maketrans('', '', string.punctuation)
-    regex = re.compile('[%s]' % re.escape(string.punctuation))
-    for word1 in stopwords:
-        word1 = regex.sub('', word1)
-        stop_wo_punc.append(word1)
-    # print(stop_wo_punc)
+    stop_wo_punc = remove_punctuation_lower(stopwords)
     if word in set(stop_wo_punc):
         return True
     else:
@@ -65,7 +65,6 @@ def count_words():
     global unique_words
     global Prior_Totals
 
-    total_records = 0
     words = {}
     Totals["True"] = 0
     Totals["Fake"] = 0
@@ -78,7 +77,6 @@ def count_words():
     Prior_Totals["Neg"] = 0
 
     for r in records:
-        total_records += 1  # print(len(records))
         # Counting Priors
         if r.t_f == "True":
             Prior_Totals["True"] += 1
@@ -90,8 +88,8 @@ def count_words():
             Prior_Totals["Neg"] += 1
 
         # Optimize get list of words w/o stopwords from stopword func
-        for t1 in r.text:
-            t = t1.lower()
+        for t in r.text:
+
             if not is_stopword(t):
                 if t not in unique_words:
                     unique_words.add(t)
@@ -116,15 +114,14 @@ def count_words():
                     words[t]["Neg"] += 1
                     Totals["Neg"] += 1
     for k in Prior_Totals.keys():
-        Prior_Totals[k] /= total_records
-    # print(len(unique_words))
+        Prior_Totals[k] /= len(records)
     len_unique = len(unique_words)
+    # print(Prior_Totals)
     for k in words.keys():
         words[k]["True"] = (words[k]["True"] + 1)/(Totals["True"] + len_unique)
         words[k]["Fake"] = (words[k]["Fake"] + 1)/(Totals["Fake"] + len_unique)
         words[k]["Pos"] = (words[k]["Pos"] + 1)/(Totals["Pos"] + len_unique)
         words[k]["Neg"] = (words[k]["Neg"] + 1)/(Totals["Neg"] + len_unique)
-    # print(words)
     nbmodel_write(words, len_unique)
 
 
