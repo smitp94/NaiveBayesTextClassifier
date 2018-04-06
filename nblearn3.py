@@ -1,7 +1,6 @@
 import json
 import sys
 import re
-import string
 
 file_write = 'data/nbmodel.txt'
 
@@ -20,10 +19,7 @@ class Record:
 
 
 def remove_punctuation_lower(contents):
-    translator = str.maketrans('', '', string.punctuation)
-
     text = ' '.join(contents)
-    # text = text.translate(translator) ?,!.;:\"-'
     regex = re.compile('[%s]' % re.escape("!\"#$%&()*+,-./:;<=>?@[\]^_{|}~"))
     text = regex.sub(' ', text)
     text = text.lower()
@@ -47,7 +43,6 @@ def read_file():
 
         r = Record(id, t_f, pos_neg, text)
         records.append(r)
-    # print(records[959].text)
 
 
 def is_stopword(word):
@@ -116,7 +111,6 @@ def count_words():
     for k in Prior_Totals.keys():
         Prior_Totals[k] /= len(records)
     len_unique = len(unique_words)
-    # print(Prior_Totals)
     for k in words.keys():
         words[k]["True"] = (words[k]["True"] + 1)/(Totals["True"] + len_unique)
         words[k]["Fake"] = (words[k]["Fake"] + 1)/(Totals["Fake"] + len_unique)

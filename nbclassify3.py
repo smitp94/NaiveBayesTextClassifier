@@ -2,7 +2,7 @@ import json
 import sys
 import math
 import re
-import string
+
 
 file_read = "data/nbmodel.txt"
 file_write = "data/nboutput.txt"
@@ -29,10 +29,7 @@ def read_param():
 
 
 def remove_punctuation_lower(contents):
-    # translator = str.maketrans('', '', string.punctuation)
-
     text = ' '.join(contents)
-    # text = text.translate(translator) ?,!.;:\"-'
     regex = re.compile('[%s]' % re.escape("!\"#$%&()*+,-./:;<=>?@[\]^_{|}~"))
     text = regex.sub(' ', text)
     text = text.lower()
@@ -69,26 +66,17 @@ def classify():
         prob_true = math.log(Prior_Totals["True"])
         prob_fake = math.log(Prior_Totals["Fake"])
 
-        if id not in answer:
-            answer[id] = {}
-            answer[id]["pos_neg"] = ""
-            answer[id]["true_fake"] = ""
+        answer[id] = {}
+        answer[id]["pos_neg"] = ""
+        answer[id]["true_fake"] = ""
 
         text = remove_punctuation_lower(contents[1:])
-        # print(text)
         for w in text:
-            # w = w1.lower()
             if w in words.keys():
                 prob_true += math.log(words[w]["True"])
                 prob_fake += math.log(words[w]["Fake"])
                 prob_pos += math.log(words[w]["Pos"])
                 prob_neg += math.log(words[w]["Neg"])
-            # elif not is_stopword(w):
-            #     prob_true += math.log(1/(Totals["True"] + len_unique))
-            #     prob_fake += math.log(1/(Totals["Fake"] + len_unique))
-            #     prob_pos += math.log(1/(Totals["Pos"] + len_unique))
-            #     prob_neg += math.log(1/(Totals["Neg"] + len_unique))
-            # print(id+" "+str(prob_pos)+" "+str(prob_neg)+" "+str(prob_true)+" "+str(prob_fake))
         if prob_true > prob_fake:
             answer[id]["true_fake"] = "True"
         else:
