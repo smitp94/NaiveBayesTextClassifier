@@ -28,13 +28,12 @@ def read_param():
     len_unique = all_dict[3]
 
 
-
 def remove_punctuation_lower(contents):
-    translator = str.maketrans('', '', string.punctuation)
+    # translator = str.maketrans('', '', string.punctuation)
 
     text = ' '.join(contents)
-    # text = text.translate(translator)
-    regex = re.compile('[%s]' % re.escape("?,!.;:\"-'"))
+    # text = text.translate(translator) ?,!.;:\"-'
+    regex = re.compile('[%s]' % re.escape("!\"#$%&()*+,-./:;<=>?@[\]^_{|}~"))
     text = regex.sub(' ', text)
     text = text.lower()
     return text.split()
@@ -77,8 +76,8 @@ def classify():
 
         text = remove_punctuation_lower(contents[1:])
         # print(text)
-        for w1 in text:
-            w = w1.lower()
+        for w in text:
+            # w = w1.lower()
             if w in words.keys():
                 prob_true += math.log(words[w]["True"])
                 prob_fake += math.log(words[w]["Fake"])
